@@ -1,0 +1,10 @@
+{   
+  "ignore": [
+    "data/**/*.json",
+    "data/**/*.jpg",
+    "data/**/*.jpeg",
+    "data/**/*.gif",
+    "data/**/*.png",
+    "tmp/*.json"
+  ] 
+}

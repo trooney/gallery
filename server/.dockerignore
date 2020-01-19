@@ -1,0 +1,9 @@
+node_modules
+data/**/*.json
+data/**/*.png
+data/**/*.jpg
+data/**/*.jpeg
+data/**/*.gif
+test/*
+tmp/*
+test

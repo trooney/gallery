@@ -1,0 +1,15 @@
+.git
+**/.dockerignore
+**/.gitignore
+**/.prettierrc
+**/.eslintrc
+**/.prettierrc
+**/.README.md
+**/.DS_STORE
+**/node_modules
+**/test
+server/data/**/*.json
+server/data/**/*.png
+server/data/**/*.jpg
+server/data/**/*.jpeg
+server/data/**/*.gif

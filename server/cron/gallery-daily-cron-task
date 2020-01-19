@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Note: Do not name file ".sh"
+
+SERVER_ROOT=/gallery/server /gallery/server/cron/install-seed-data.sh
