@@ -56,8 +56,13 @@ const UploaderForm = ({ clickedItem, clearClickedItem }) => {
 
   useEffect(() => {
     function updateItem({ name, item }) {
-      if (name === 'topic') setTopics(splitAndCompact(`${topics}, ${item}`, ',').join(', '))
-      if (name === 'tag') setTags(splitAndCompact(`${tags}, ${item}`, ',').join(', '))
+      if (name === 'topic' && !topics.includes(item)) {
+        setTopics(splitAndCompact(`${topics}, ${item}`, ',').join(', '))
+      }
+
+      if (name === 'tag' && !tags.includes(item)) {
+        setTags(splitAndCompact(`${tags}, ${item}`, ',').join(', '))
+      }
     }
 
     if (clickedItem) {
@@ -91,11 +96,14 @@ const UploaderForm = ({ clickedItem, clearClickedItem }) => {
       requestData.map(data => {
         incrementRequestCounter()
 
-        return axios.post('/api/photos', data).then(res => {
-          appDispatch({ type: 'addPhoto', payload: res.data.photo })
-        }).finally(() => {
-          decrementRequestCounter()
-        })
+        return axios
+          .post('/api/photos', data)
+          .then(res => {
+            appDispatch({ type: 'addPhoto', payload: res.data.photo })
+          })
+          .finally(() => {
+            decrementRequestCounter()
+          })
       })
     )
       .then(res => {
