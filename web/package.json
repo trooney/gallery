@@ -13,11 +13,11 @@
     "d3-array": "^2.3.3",
     "fuse.js": "^3.4.5",
     "node-sass": "^4.12.0",
-    "react": "^16.11.0",
+    "react": "^16.14.0",
     "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "^16.11.0",
     "react-photo-gallery": "^8.0.0",
-    "react-scripts": "3.2.0"
+    "react-scripts": "^4.0.0"
   },
   "devDependencies": {
     "eslint-plugin-prettier": "^3.1.1",
