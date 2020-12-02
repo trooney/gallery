@@ -1,10 +1,19 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import { Form, Button } from 'react-bootstrap'
 import classNames from 'classnames'
 import axios from 'axios'
 import AppStateContext from './appStateContext'
 import { Icon } from './Icon'
 import { splitAndCompact } from './utils'
+import useDimensions from 'react-use-dimensions'
+
+const SCALE_FIT = 'fit';
+const SCALE_HALF_FILL = 'half-fill';
+const SCALE_FILL = 'fill';
+const SCALE_DOUBLE_FILL = 'double-fill';
+
+
+const SCALES = [SCALE_FIT, SCALE_HALF_FILL, SCALE_FILL, SCALE_DOUBLE_FILL]
 
 const useDrawer = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -25,42 +34,152 @@ const usePlayer = () => {
   return { isPlaying, togglePlayer, stopPlayer }
 }
 
-const ImageViewer = ({ photo, prevPhoto, nextPhoto }) => {
-  const { url, hash, tags, topics } = photo
+const useScaler = () => {
+  const [scale, setScale] = useState(SCALE_FIT)
 
-  const [isZoomed, setIsZoomed] = useState(false)
+  const resetScale = () => setScale(SCALE_FIT)
+
+  const nextScale = () => {
+    const newScale = SCALES[(SCALES.indexOf(scale) + 1) % SCALES.length]
+    setScale(newScale)
+  }
+
+  return { scale, resetScale, nextScale }
+}
+
+const ImageViewer = ({ photo, prevPhoto, nextPhoto }) => {
+  const [ref, { width: offsetWidth, height: offsetHeight}] = useDimensions();
+
+  const { width, height, url, hash, tags, topics } = photo
+  
+
+  const { scale, resetScale, nextScale } = useScaler()
 
   useEffect(() => {
-    setIsZoomed(false)
+    resetScale()
   }, [photo])
 
   const handleClick = e => {
     e.stopPropagation()
-    setIsZoomed(!isZoomed)
+    nextScale()
   }
 
-  const classes = classNames({
-    'mh-100': !isZoomed,
-    'mw-100': !isZoomed
-  })
+  const fittedImage = () => {
+    let photoAspect = height / width
+    let newWidth = offsetWidth
+    let newHeight = photoAspect * offsetWidth
+
+    // if overly wide. 
+    if (photoAspect < 1) {
+      newWidth = offsetHeight * (width / height)
+      newHeight = offsetHeight
+
+      if (newWidth > offsetWidth) {
+        newWidth = offsetWidth
+        newHeight = offsetWidth * (height / width)
+      }
+    }
+
+    // if (still) overly tall
+    if (photoAspect >= 1) {
+      newWidth = (width / height) * offsetHeight
+      newHeight = offsetHeight
+    }
+
+    return { width: newWidth, height: newHeight }
+  }
+
+  const basicImage = fittedImage();
+
+  const filledImage = () => {
+    let photoAspect = basicImage.height / basicImage.width
+    let newWidth = offsetWidth
+    let newHeight = photoAspect * offsetWidth
+
+    if (photoAspect < 1) {
+      newWidth = (width / height) * offsetHeight
+      newHeight = offsetHeight
+    } else {
+      newWidth = offsetWidth
+      newHeight = (height / width) * offsetWidth
+    }
+
+    return { width: newWidth, height: newHeight }
+  }
+  
+  const normalizedImage = filledImage()
+
+  const deplex = (style) => {
+    return {
+      position: 'absolute',
+      top: `${style.top || 0}px`,
+      left: `${style.left || 0}px`,
+      width: `${style.width}px`,
+      height: `${style.height}px`,
+    }
+  }
+
+  const scalerStyles = {
+    [SCALE_FIT]: function() {
+      let top = (offsetHeight - basicImage.height) / 2
+      let left = (offsetWidth - basicImage.width) / 2
+
+      return deplex({...basicImage, top, left})
+    },
+    [SCALE_HALF_FILL]: function() {
+      normalizedImage.height = ((normalizedImage.height - basicImage.height) * 0.5) + basicImage.height
+      normalizedImage.width = ((normalizedImage.width - basicImage.width) * 0.5) + basicImage.width
+
+      let top = normalizedImage.height < offsetHeight ? (offsetHeight - normalizedImage.height) / 2 : 0
+      let left = (offsetWidth - normalizedImage.width) / 2
+
+      return deplex({...normalizedImage, top, left})
+    },
+    [SCALE_FILL]: function() {
+      let top = normalizedImage.height < offsetHeight ? (offsetHeight - normalizedImage.height) / 2 : 0
+      let left = (offsetWidth - normalizedImage.width) / 2
+
+      return deplex({...normalizedImage, top, left})
+
+    },
+    [SCALE_DOUBLE_FILL]: function() {
+      normalizedImage.height = normalizedImage.height * 1.25
+      normalizedImage.width = normalizedImage.width  * 1.25
+
+      let top = normalizedImage.height < offsetHeight ? (offsetHeight - normalizedImage.height) / 2 : 0
+      let left = normalizedImage.width < offsetWidth ? (offsetWidth - normalizedImage.width) / 2 : 0
+
+      return deplex({...normalizedImage, top, left})
+    }
+  }
+
+  const oa = offsetWidth * offsetHeight
+  const ia = basicImage.width * basicImage.height
 
   return (
-    <div className={'p-relative h-100 d-flex align-items-start justify-content-center'}>
+    <div ref={ref} className={'w-100 h-100'}>
       <div className="Viewer-Mover Viewer-Mover-Left" onClick={prevPhoto}>
         <i className="fa fa-chevron-left fa-2x" />
       </div>
-      <img
-        src={url}
-        data-hash={hash}
-        data-tags={tags.join(' ')}
-        data-topics={topics.join(' ')}
-        onClick={handleClick}
-        className={classes}
-        alt=""
-      />
+      <div className="Viewer-Image">
+        <img
+          src={url}
+          data-hash={hash}
+          data-tags={tags.join(' ')}
+          data-topics={topics.join(' ')}
+          onClick={handleClick}
+          style={scalerStyles[scale]()}
+          alt=""
+        />
+      </div>
       <div className="Viewer-Mover Viewer-Mover-Right" onClick={nextPhoto}>
         <i className="fa fa-chevron-right fa-2x" />
       </div>
+      {/* <div className="Viewer-Sizer">
+        <div>{scale}</div>
+        <div>{Math.round(oa)}, {Math.round(ia)}, {Math.round(oa - ia)}</div>
+        <div>{Math.round(Math.sqrt(oa))}, {Math.round(Math.sqrt(ia))}, {Math.round(Math.sqrt(oa) - Math.sqrt(ia))}</div>
+      </div> */}
     </div>
   )
 }
@@ -173,7 +292,7 @@ const Viewer = ({ photo, nextPhoto, prevPhoto }) => {
     if (isPlaying) {
       interval = setInterval(() => {
         nextPhoto()
-      }, 15000)
+      }, 25000)
     }
 
     return () => {
