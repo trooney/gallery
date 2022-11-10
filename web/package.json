@@ -8,7 +8,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.11.2",
     "axios": "^0.21.2",
-    "bootstrap": "^4.4.1",
+    "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
     "d3-array": "^2.3.3",
     "fuse.js": "^3.4.5",
@@ -16,7 +16,7 @@
     "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "^16.11.0",
     "react-photo-gallery": "^8.0.0",
-    "react-scripts": "^4.0.0",
+    "react-scripts": "4.0.3",
     "react-use-dimensions": "^1.2.1",
     "sass": "^1.56.1"
   },
