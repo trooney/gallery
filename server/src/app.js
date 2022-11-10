@@ -46,7 +46,7 @@ app.get('/api/photos', (req, res) => {
 
 app.post('/api/photos', async (req, res) => {
   try {
-    const { src, tags, topics } = req.body.photo  
+    const { src, tags, topics } = req.body.photo
     const result = await addPhoto(src, tags, topics)
     const photo = transformDbRecordToApiRecord(result)
     res.send({ photo })

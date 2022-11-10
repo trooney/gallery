@@ -14,19 +14,18 @@ export const unique = (...items) => {
 export const shuffle = d3Shuffle
 
 export const sortPhotos = photos => {
-
   const sortKey = photo => {
     let parts = []
-  
+
     if (photo.tags.length > 0) {
       parts = parts.concat(1)
       parts = parts.concat(photo.tags)
     }
-  
+
     if (photo.topics.length > 0) {
       parts = parts.concat(photo.topics)
     }
-  
+
     return parts.join('')
   }
 

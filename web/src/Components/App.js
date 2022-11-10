@@ -131,7 +131,7 @@ function App() {
       .split('/')
       .filter(part => part)
       .pop()
-      
+
     switch (route) {
       case ROUTE_UPLOADER:
         appDispatch({ type: 'setRoute', payload: ROUTE_UPLOADER })
@@ -141,7 +141,6 @@ function App() {
     }
   }, [])
 
-
   useEffect(() => {
     const path = ['', appState.route].join('/')
     window.history.pushState({}, '', path)
@@ -149,7 +148,6 @@ function App() {
 
   useEffect(() => {
     const onKeyDown = e => {
-
       if (e.target.tagName !== 'BODY') {
         return
       }
@@ -180,7 +178,7 @@ function App() {
     const onDragEnter = e => {
       if (appState.route === ROUTE_GALLERY && !e.fromElement) {
         appDispatch({ type: 'setRoute', payload: ROUTE_UPLOADER })
-      }      
+      }
     }
 
     document.addEventListener('dragenter', onDragEnter)
@@ -189,7 +187,6 @@ function App() {
       document.removeEventListener('dragenter', onDragEnter)
     }
   }, [appState.route])
-
 
   const commonClasses = classNames('h-100', 'w-100')
   const galleryClasses = classNames(commonClasses, { 'd-none': appState.route !== ROUTE_GALLERY })

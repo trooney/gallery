@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { Form, Button } from 'react-bootstrap'
 import classNames from 'classnames'
 import axios from 'axios'
@@ -7,11 +7,10 @@ import { Icon } from './Icon'
 import { splitAndCompact } from './utils'
 import useDimensions from 'react-use-dimensions'
 
-const SCALE_FIT = 'fit';
-const SCALE_HALF_FILL = 'half-fill';
-const SCALE_FILL = 'fill';
-const SCALE_DOUBLE_FILL = 'double-fill';
-
+const SCALE_FIT = 'fit'
+const SCALE_HALF_FILL = 'half-fill'
+const SCALE_FILL = 'fill'
+const SCALE_DOUBLE_FILL = 'double-fill'
 
 const SCALES = [SCALE_FIT, SCALE_HALF_FILL, SCALE_FILL, SCALE_DOUBLE_FILL]
 
@@ -48,16 +47,15 @@ const useScaler = () => {
 }
 
 const ImageViewer = ({ photo, prevPhoto, nextPhoto }) => {
-  const [ref, { width: offsetWidth, height: offsetHeight}] = useDimensions();
+  const [ref, { width: offsetWidth, height: offsetHeight }] = useDimensions()
 
   const { width, height, url, hash, tags, topics } = photo
-  
 
   const { scale, resetScale, nextScale } = useScaler()
 
   useEffect(() => {
     resetScale()
-  }, [photo])
+  }, [photo, resetScale])
 
   const handleClick = e => {
     e.stopPropagation()
@@ -69,7 +67,7 @@ const ImageViewer = ({ photo, prevPhoto, nextPhoto }) => {
     let newWidth = offsetWidth
     let newHeight = photoAspect * offsetWidth
 
-    // if overly wide. 
+    // if overly wide.
     if (photoAspect < 1) {
       newWidth = offsetHeight * (width / height)
       newHeight = offsetHeight
@@ -89,7 +87,7 @@ const ImageViewer = ({ photo, prevPhoto, nextPhoto }) => {
     return { width: newWidth, height: newHeight }
   }
 
-  const basicImage = fittedImage();
+  const basicImage = fittedImage()
 
   const filledImage = () => {
     let photoAspect = basicImage.height / basicImage.width
@@ -106,16 +104,16 @@ const ImageViewer = ({ photo, prevPhoto, nextPhoto }) => {
 
     return { width: newWidth, height: newHeight }
   }
-  
+
   const normalizedImage = filledImage()
 
-  const deplex = (style) => {
+  const deplex = style => {
     return {
       position: 'absolute',
       top: `${style.top || 0}px`,
       left: `${style.left || 0}px`,
       width: `${style.width}px`,
-      height: `${style.height}px`,
+      height: `${style.height}px`
     }
   }
 
@@ -124,37 +122,36 @@ const ImageViewer = ({ photo, prevPhoto, nextPhoto }) => {
       let top = (offsetHeight - basicImage.height) / 2
       let left = (offsetWidth - basicImage.width) / 2
 
-      return deplex({...basicImage, top, left})
+      return deplex({ ...basicImage, top, left })
     },
     [SCALE_HALF_FILL]: function() {
-      normalizedImage.height = ((normalizedImage.height - basicImage.height) * 0.5) + basicImage.height
-      normalizedImage.width = ((normalizedImage.width - basicImage.width) * 0.5) + basicImage.width
+      normalizedImage.height = (normalizedImage.height - basicImage.height) * 0.5 + basicImage.height
+      normalizedImage.width = (normalizedImage.width - basicImage.width) * 0.5 + basicImage.width
 
       let top = normalizedImage.height < offsetHeight ? (offsetHeight - normalizedImage.height) / 2 : 0
       let left = (offsetWidth - normalizedImage.width) / 2
 
-      return deplex({...normalizedImage, top, left})
+      return deplex({ ...normalizedImage, top, left })
     },
     [SCALE_FILL]: function() {
       let top = normalizedImage.height < offsetHeight ? (offsetHeight - normalizedImage.height) / 2 : 0
       let left = (offsetWidth - normalizedImage.width) / 2
 
-      return deplex({...normalizedImage, top, left})
-
+      return deplex({ ...normalizedImage, top, left })
     },
     [SCALE_DOUBLE_FILL]: function() {
       normalizedImage.height = normalizedImage.height * 1.25
-      normalizedImage.width = normalizedImage.width  * 1.25
+      normalizedImage.width = normalizedImage.width * 1.25
 
       let top = normalizedImage.height < offsetHeight ? (offsetHeight - normalizedImage.height) / 2 : 0
       let left = normalizedImage.width < offsetWidth ? (offsetWidth - normalizedImage.width) / 2 : 0
 
-      return deplex({...normalizedImage, top, left})
+      return deplex({ ...normalizedImage, top, left })
     }
   }
 
-  const oa = offsetWidth * offsetHeight
-  const ia = basicImage.width * basicImage.height
+  // const oa = offsetWidth * offsetHeight
+  // const ia = basicImage.width * basicImage.height
 
   return (
     <div ref={ref} className={'w-100 h-100'}>

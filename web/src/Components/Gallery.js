@@ -48,7 +48,7 @@ const GalleryHeader = () => {
 
 const Gallery = ({ photos }) => {
   const { appDispatch } = useContext(AppStateContext)
-  
+
   const galleryPhotos = photos.map(p => {
     return { src: p.url, width: p.width, height: p.height }
   })
