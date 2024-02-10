@@ -1,6 +1,6 @@
 # Frontend
 
-FROM node:12.10-alpine as web
+FROM node:18.19-alpine
 WORKDIR /gallery/web
 COPY web/package.json ./
 COPY web/yarn.lock ./
@@ -10,7 +10,7 @@ RUN yarn build
 
 # Backend
 
-FROM node:12.10-alpine
+FROM node:18.19-alpine
 WORKDIR /gallery/server
 COPY server/package.json ./
 COPY server/yarn.lock ./

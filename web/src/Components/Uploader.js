@@ -1,118 +1,118 @@
-import React, { useContext, useState, useEffect } from 'react'
-import { Form, Button } from 'react-bootstrap'
-import axios from 'axios'
-import AppStateContext from './appStateContext'
-import { Icon } from './Icon'
-import { splitAndCompact } from './utils'
+import React, {useContext, useState, useEffect} from 'react';
+import {Form, Button} from 'react-bootstrap';
+import axios from 'axios';
+import AppStateContext from './appStateContext';
+import {Icon} from './Icon';
+import {splitAndCompact} from './utils';
 
-const UploaderForm = ({ clickedItem, clearClickedItem }) => {
-  const { appDispatch } = useContext(AppStateContext)
+const UploaderForm = ({clickedItem, clearClickedItem}) => {
+  const {appDispatch} = useContext(AppStateContext);
 
-  const [urls, setUrls] = useState('')
-  const [topics, setTopics] = useState('')
-  const [tags, setTags] = useState('')
-  const [requestCounter, setRequestCounter] = useState(0)
+  const [urls, setUrls] = useState('');
+  const [topics, setTopics] = useState('');
+  const [tags, setTags] = useState('');
+  const [requestCounter, setRequestCounter] = useState(0);
 
   const pushUrl = url => {
-    const newUrls = splitAndCompact(urls, '\n')
-      .concat(url)
-      .join('\n')
-    setUrls(newUrls)
-  }
+    const newUrls = splitAndCompact(urls, '\n').concat(url).join('\n');
+    setUrls(newUrls);
+  };
 
   const incrementRequestCounter = () => {
-    setRequestCounter(requestCounter + 1)
-  }
+    setRequestCounter(requestCounter + 1);
+  };
 
   const decrementRequestCounter = () => {
-    setRequestCounter(requestCounter - 1)
-  }
+    setRequestCounter(requestCounter - 1);
+  };
 
   const handleUrlsChange = e => {
-    setUrls(e.target.value)
-  }
+    setUrls(e.target.value);
+  };
 
   const handleTopicsChange = e => {
-    setTopics(e.target.value)
-  }
+    setTopics(e.target.value);
+  };
 
   const handleTagsChange = e => {
-    setTags(e.target.value)
-  }
+    setTags(e.target.value);
+  };
 
   const handleDrop = e => {
-    e.preventDefault()
+    e.preventDefault();
 
     for (var i = 0; i < e.dataTransfer.items.length; i++) {
-      const item = e.dataTransfer.items[i]
+      const item = e.dataTransfer.items[i];
 
       if (item.kind === 'string' && item.type === 'text/uri-list') {
         item.getAsString(str => {
-          pushUrl(str)
-        })
+          pushUrl(str);
+        });
       }
     }
-  }
+  };
 
   useEffect(() => {
-    function updateItem({ name, item }) {
+    function updateItem({name, item}) {
       if (name === 'topic' && !topics.includes(item)) {
-        setTopics(splitAndCompact(`${topics}, ${item}`, ',').join(', '))
+        setTopics(splitAndCompact(`${topics}, ${item}`, ',').join(', '));
       }
 
       if (name === 'tag' && !tags.includes(item)) {
-        setTags(splitAndCompact(`${tags}, ${item}`, ',').join(', '))
+        setTags(splitAndCompact(`${tags}, ${item}`, ',').join(', '));
       }
     }
 
     if (clickedItem) {
-      updateItem(clickedItem)
-      clearClickedItem()
+      updateItem(clickedItem);
+      clearClickedItem();
     }
-  }, [clickedItem, clearClickedItem, tags, topics])
+  }, [clickedItem, clearClickedItem, tags, topics]);
 
   // HTML5 Drag API requires multiple events to be present
   // even when they're not actually used.
   const handleNothing = e => {
-    e.preventDefault()
-  }
+    e.preventDefault();
+  };
 
   const handleSaveClick = e => {
-    const allUrls = splitAndCompact(urls, '\n')
-    const allTopics = splitAndCompact(topics, ',')
-    const allTags = splitAndCompact(tags, ',')
+    const allUrls = splitAndCompact(urls, '\n');
+    const allTopics = splitAndCompact(topics, ',');
+    const allTags = splitAndCompact(tags, ',');
 
     const requestData = allUrls.map(url => {
       return {
         photo: {
           src: url,
           topics: allTopics,
-          tags: allTags
-        }
-      }
-    })
+          tags: allTags,
+        },
+      };
+    });
 
     Promise.all(
       requestData.map(data => {
-        incrementRequestCounter()
+        incrementRequestCounter();
 
         return axios
           .post('/api/photos', data)
           .then(res => {
-            appDispatch({ type: 'addPhoto', payload: res.data.photo })
+            appDispatch({type: 'addPhoto', payload: res.data.photo});
           })
           .finally(() => {
-            decrementRequestCounter()
-          })
+            decrementRequestCounter();
+          });
       })
     )
       .then(res => {
-        setUrls('')
+        setUrls('');
       })
       .catch(err => {
-        alert("Oops! We've hit an error. Probably a bad file...\nBut this is as much error handling as we're going to do :(")
-      })
-  }
+        alert(
+          "Oops! We've hit an error. Probably a bad file...\nBut this is as much error handling as we're going to do :("
+        );
+      });
+  };
 
   return (
     <React.Fragment>
@@ -148,15 +148,15 @@ const UploaderForm = ({ clickedItem, clearClickedItem }) => {
         </Button>
       </Form.Group>
     </React.Fragment>
-  )
-}
+  );
+};
 
 const UploaderHeader = () => {
-  const { appDispatch } = useContext(AppStateContext)
+  const {appDispatch} = useContext(AppStateContext);
 
   const handleCloseUploaderClick = () => {
-    appDispatch({ type: 'openGallery' })
-  }
+    appDispatch({type: 'openGallery'});
+  };
   return (
     <header className="App-Header">
       <div>
@@ -166,19 +166,19 @@ const UploaderHeader = () => {
         <Icon name="fas fa-times fa-fw" onClick={handleCloseUploaderClick} text="Close" />
       </div>
     </header>
-  )
-}
+  );
+};
 
-const Uploader = ({ fetchData, topics, tags }) => {
-  const [clickedItem, setClickedItem] = useState(null)
+const Uploader = ({fetchData, topics, tags}) => {
+  const [clickedItem, setClickedItem] = useState(null);
 
   const handleItemClick = (name, item) => {
-    setClickedItem({ name, item })
-  }
+    setClickedItem({name, item});
+  };
 
   const clearClickedItem = () => {
-    setClickedItem(null)
-  }
+    setClickedItem(null);
+  };
 
   return (
     <div className="App-Container">
@@ -189,7 +189,11 @@ const Uploader = ({ fetchData, topics, tags }) => {
         <div className="container-fluid px-0">
           <div className="row">
             <div className="pt-2 col-6">
-              <UploaderForm fetchData={fetchData} clickedItem={clickedItem} clearClickedItem={clearClickedItem} />
+              <UploaderForm
+                fetchData={fetchData}
+                clickedItem={clickedItem}
+                clearClickedItem={clearClickedItem}
+              />
             </div>
             <div className="col-2 offset-1 pt-2">
               <h5>Topics</h5>
@@ -217,7 +221,7 @@ const Uploader = ({ fetchData, topics, tags }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Uploader
+export default Uploader;

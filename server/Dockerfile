@@ -1,4 +1,4 @@
-FROM node:12.10-alpine
+FROM node:18.19-alpine
 
 WORKDIR /gallery/server
 COPY package.json ./

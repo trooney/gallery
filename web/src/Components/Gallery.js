@@ -1,25 +1,25 @@
-import React, { useContext } from 'react'
-import { default as ReactPhotoGallery } from 'react-photo-gallery'
+import React, {useContext} from 'react';
+import {default as ReactPhotoGallery} from 'react-photo-gallery';
 
-import AppStateContext from './appStateContext'
+import AppStateContext from './appStateContext';
 
 const GalleryHeader = () => {
-  const { appDispatch } = useContext(AppStateContext)
+  const {appDispatch} = useContext(AppStateContext);
 
   const handleUploaderClick = () => {
-    appDispatch({ type: 'openUploader' })
-  }
+    appDispatch({type: 'openUploader'});
+  };
   const handleQueryChange = e => {
-    appDispatch({ type: 'setQuery', payload: e.target.value })
-  }
+    appDispatch({type: 'setQuery', payload: e.target.value});
+  };
 
   const handleReshuffleClick = () => {
-    appDispatch({ type: 'reshuffle' })
-  }
+    appDispatch({type: 'reshuffle'});
+  };
 
   const handleUnshuffleClick = () => {
-    appDispatch({ type: 'unshuffle' })
-  }
+    appDispatch({type: 'unshuffle'});
+  };
 
   return (
     <header className="App-Header">
@@ -34,8 +34,14 @@ const GalleryHeader = () => {
           type="search"
           placeholder="Search"
         />
-        <i className="fas fa-level-down-alt fa-fw hover-text cursor-pointer" onClick={handleUnshuffleClick} />
-        <i className="fas fa-random fa-fw hover-text cursor-pointer" onClick={handleReshuffleClick} />
+        <i
+          className="fas fa-level-down-alt fa-fw hover-text cursor-pointer"
+          onClick={handleUnshuffleClick}
+        />
+        <i
+          className="fas fa-random fa-fw hover-text cursor-pointer"
+          onClick={handleReshuffleClick}
+        />
       </form>
       <div className="ml-auto">
         <span onClick={handleUploaderClick} className="cursor-pointer">
@@ -43,19 +49,19 @@ const GalleryHeader = () => {
         </span>
       </div>
     </header>
-  )
-}
+  );
+};
 
-const Gallery = ({ photos }) => {
-  const { appDispatch } = useContext(AppStateContext)
+const Gallery = ({photos}) => {
+  const {appDispatch} = useContext(AppStateContext);
 
   const galleryPhotos = photos.map(p => {
-    return { src: p.url, width: p.width, height: p.height }
-  })
+    return {src: p.url, width: p.width, height: p.height};
+  });
 
-  const handleReactPhotoGalleryClick = (e, { index }) => {
-    appDispatch({ type: 'openViewer', payload: index })
-  }
+  const handleReactPhotoGalleryClick = (e, {index}) => {
+    appDispatch({type: 'openViewer', payload: index});
+  };
 
   return (
     <div className="App-Container">
@@ -70,12 +76,16 @@ const Gallery = ({ photos }) => {
           </div>
         ) : (
           <div className="w-100 h-100">
-            <ReactPhotoGallery photos={galleryPhotos} onClick={handleReactPhotoGalleryClick} margin={6} />
+            <ReactPhotoGallery
+              photos={galleryPhotos}
+              onClick={handleReactPhotoGalleryClick}
+              margin={6}
+            />
           </div>
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Gallery
+export default Gallery;
