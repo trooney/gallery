@@ -190,7 +190,7 @@ function App() {
 
   const commonClasses = classNames('h-100', 'w-100');
   const galleryClasses = classNames(commonClasses, {
-    'd-nonez': appState.route !== ROUTE_GALLERY,
+    'd-none': appState.route !== ROUTE_GALLERY,
   });
   const viewerClasses = classNames(commonClasses, {
     'd-none': appState.route !== ROUTE_VIEWER,
