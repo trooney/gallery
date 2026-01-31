@@ -22,7 +22,7 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-    "eslint": "^7.21.0",
+    "eslint": "^9.26.0",
     "eslint-plugin-prettier": "^3.3.1",
     "prettier": "^2.8.8",
     "prettier-airbnb-config": "^1.0.0"
